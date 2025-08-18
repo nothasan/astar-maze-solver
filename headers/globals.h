@@ -1,6 +1,5 @@
 #pragma once
 
-
-#define ROWS  40
-#define COLS  60
-#define CELL_SIZE 16
+    #define CELL_SIZE 20
+    #define ROWS 30
+    #define COLS 40

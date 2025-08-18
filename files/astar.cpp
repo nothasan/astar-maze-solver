@@ -1,10 +1,12 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-#include "headers/globals.h" 
+#include "headers/grid.h" 
 #include "headers/node.h"
 #include <cmath>
 #include "headers/astar.h"
 #include <iostream>
+#include "headers/globals.h"
+
 
 static double heuristic(int r1, int c1, int r2, int c2) {
     int dr = r1 - r2;
@@ -41,13 +43,13 @@ static double stepCost(const Cell* a, const Cell* b) {
 }
 
 
-static std::vector<std::pair<int,int>> reconstructPath(const std::vector<std::vector<Cell>>& grid, const Cell* goalCell) {
+static std::vector<std::pair<int,int>> reconstructPath(Grid& grid, const Cell* goalCell) {
     std::vector<std::pair<int,int>> path;
     int r = goalCell->r, c = goalCell->c;
     while (r != -1 && c != -1) {
         if (r < 0 || r >= ROWS || c < 0 || c >= COLS) break; // Prevent out-of-bounds
         path.emplace_back(r, c);
-        const Cell& cur = grid[r][c];
+        const Cell& cur = grid.cell(r, c);
         if (cur.parent_r == -1 && cur.parent_c == -1) break;
         r = cur.parent_r;
         c = cur.parent_c;
@@ -65,12 +67,12 @@ static bool astarActive = false;
 static std::vector<std::pair<int, int>> path;
 
 // Call this to initialize A* (set start/goal, clear lists)
-void aStarInit(std::vector<std::vector<Cell>>& grid, int start_r, int start_c, int goal_r, int goal_c) {
+void aStarInit(Grid& grid, int start_r, int start_c, int goal_r, int goal_c) {
     openList.clear();
     closedList.clear();
     path.clear();
     astarActive = true;
-    currentCell = &grid[start_r][start_c];
+    currentCell = &grid.cell(start_r, start_c);
     currentCell->g = 0.0;
     currentCell->h = heuristic(start_r, start_c, goal_r, goal_c);
     currentCell->f = currentCell->g + currentCell->h;
@@ -78,7 +80,7 @@ void aStarInit(std::vector<std::vector<Cell>>& grid, int start_r, int start_c, i
 }
 
 // Call this once per frame to advance the algorithm
-bool aStarStep(std::vector<std::vector<Cell>>& grid, int goal_r, int goal_c) {
+bool aStarStep(Grid &grid, int goal_r, int goal_c) {
     if (!astarActive || openList.empty()) return false;
 
    auto currentIt = std::min_element(openList.begin(), openList.end(),
@@ -95,7 +97,7 @@ bool aStarStep(std::vector<std::vector<Cell>>& grid, int goal_r, int goal_c) {
         path = reconstructPath(grid, currentCell);
      
         for (const auto& [r, c] : path)
-            grid[r][c].state = CellState::Found;
+            grid.cell(r,c).state = CellState::Found;
         astarActive = false;
         return true; // Path found
     } else {
@@ -107,7 +109,7 @@ bool aStarStep(std::vector<std::vector<Cell>>& grid, int goal_r, int goal_c) {
             int neighbor_c = currentCell->c + dc;
             if (neighbor_r < 0 || neighbor_r >= ROWS || neighbor_c < 0 || neighbor_c >= COLS)
                 continue;
-            Cell& neighbor = grid[neighbor_r][neighbor_c];
+            Cell& neighbor = grid.cell(neighbor_r, neighbor_c);
             
             if (std::find(closedList.begin(), closedList.end(), &neighbor) != closedList.end())
                 continue;

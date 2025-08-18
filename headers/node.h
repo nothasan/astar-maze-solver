@@ -30,11 +30,4 @@ struct Cell {
         state = CellState::Unseen;
     }
 
- void resetPath2() {
-        g = std::numeric_limits<double>::infinity();
-        h = 0.0;
-        f = std::numeric_limits<double>::infinity();
-        parent_r = parent_c = -1;
-        state = CellState::Open;
-    }
 };
