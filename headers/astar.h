@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <utility>
-#include "headers/node.h"  // or wherever your Cell struct is defined
+#include "headers/node.h" 
 #include "grid.h"
 
 bool aStarStep(Grid &grid, int goal_r, int goal_c);
