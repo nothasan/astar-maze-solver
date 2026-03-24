@@ -25,9 +25,3 @@ The program finds and displays the shortest path from a start cell to a goal cel
 - A C++ compiler with C++17 support (g++, clang, or MSVC)  
 - [SFML](https://www.sfml-dev.org/) installed (graphics, window, and system modules)  
 - Git  
-
-### Build Instructions
-Clone the repository:
-```bash
-git clone https://github.com/<your-username>/astar-maze-solver.git
-cd astar-maze-solver
